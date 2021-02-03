@@ -19,6 +19,7 @@ void lcd_write_reg (uint8_t command, uint8_t * data, uint16_t size);
 uint16_t lcd_read_reg (uint8_t command);
 void lcd_set_orientation (uint8_t orientation);
 void lcd_set_cursor (uint16_t x_pos, uint16_t y_pos);
+void lcd_set_region (uint16_t x_pos, uint16_t y_pos, uint16_t x_size, uint16_t y_size);
 
 #define lcd_pixel_width 240
 #define lcd_pixel_height 240

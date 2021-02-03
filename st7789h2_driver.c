@@ -14,13 +14,29 @@ void lcd_set_cursor (uint16_t x_pos, uint16_t y_pos)
     uint8_t parameter[4];
     parameter[0] = 0x00;
     parameter[2] = 0x00;
-    parameter[3] = 0xEF;
+    parameter[3] = 239; // end pos
 
     // comumn addrses set
-    parameter[1] = 0x00 + x_pos;
+    parameter[1] = x_pos;
     lcd_write_reg(ST7789H2_CASET, parameter, 4);
     // row addrses set
-    parameter[1] = 0x00 + y_pos;
+    parameter[1] = y_pos;
+    lcd_write_reg(ST7789H2_RASET, parameter, 4);
+}
+
+void lcd_set_region (uint16_t x_pos, uint16_t y_pos, uint16_t x_size, uint16_t y_size)
+{
+    uint8_t parameter[4];
+    parameter[0] = 0x00;
+    parameter[2] = 0x00;
+
+    // comumn addrses set
+    parameter[1] = x_pos;
+    parameter[3] = x_pos + x_size;
+    lcd_write_reg(ST7789H2_CASET, parameter, 4);
+    // row addrses set
+    parameter[1] = y_pos;
+    parameter[3] = y_pos + y_size;
     lcd_write_reg(ST7789H2_RASET, parameter, 4);
 }
 
@@ -74,25 +90,17 @@ void lcd_set_orientation (uint8_t orientation)
 void draw_h_line (uint16_t x_pos, uint16_t y_pos, uint16_t x_size, uint16_t * data)
 {
     lcd_set_cursor(x_pos, y_pos);
-
     // prepare to write to LCD RAM
     LCD_IO_WriteReg(ST7789H2_WRITE_RAM);
     LCD_IO_WriteMultipleData(data, x_size);
-    /*
-    for (uint16_t i = 0; i < x_size; i++)
-    {
-        LCD_IO_WriteData(data[i]);
-    }
-    */
 }
 
 void draw_RGB_image (uint16_t x_pos, uint16_t y_pos, uint16_t x_size, uint16_t y_size, uint16_t * data)
 {
-    for (uint16_t i = 0; i < y_size; ++i)
-    {
-        // draw one line of the picture 
-        draw_h_line(x_pos, y_pos + i, x_size, data + (i * x_size));
-    }
+    lcd_set_region(x_pos, y_pos, x_size, y_size);
+    // prepare to write to LCD RAM
+    LCD_IO_WriteReg(ST7789H2_WRITE_RAM);
+    LCD_IO_WriteMultipleData(data, x_size * y_size);
 }
 
 void draw_h_line_mono (uint16_t x_pos, uint16_t y_pos, uint16_t x_size, uint16_t color)
