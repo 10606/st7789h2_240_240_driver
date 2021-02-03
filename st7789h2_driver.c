@@ -1,23 +1,94 @@
 #include "st7789h2_driver.h"
 
-#include "st7789h2/st7789h2.h"
+void lcd_write_reg (uint8_t command, uint8_t * data, uint16_t size)
+{
+    // prepare to write to LCD RAM
+    LCD_IO_WriteReg(command);
+
+    for (uint16_t i = 0; i != size; i++)
+        LCD_IO_WriteData(data[i]);
+}
+
+void lcd_set_cursor (uint16_t x_pos, uint16_t y_pos)
+{
+    uint8_t parameter[4];
+    parameter[0] = 0x00;
+    parameter[2] = 0x00;
+    parameter[3] = 0xEF;
+
+    // comumn addrses set
+    parameter[1] = 0x00 + x_pos;
+    lcd_write_reg(ST7789H2_CASET, parameter, 4);
+    // row addrses set
+    parameter[1] = 0x00 + y_pos;
+    lcd_write_reg(ST7789H2_RASET, parameter, 4);
+}
+
+uint16_t lcd_read_reg (uint8_t command)
+{
+    LCD_IO_WriteReg(command);
+    LCD_IO_ReadData();
+    return LCD_IO_ReadData();
+}
+
+
+void lcd_set_orientation (uint8_t orientation)
+{
+    uint8_t parameter[6];
+
+    switch (orientation)
+    {
+    case ST7789H2_ORIENTATION_LANDSCAPE:
+    default:
+        parameter[0] = 0x00;
+        break;
+    case ST7789H2_ORIENTATION_LANDSCAPE_ROT180:
+        // vertical scrolling definition
+        // TFA describes the Top Fixed Area
+        parameter[0] = 0x00;
+        parameter[1] = 0x00;
+        // VSA describes the height of the Vertical Scrolling Area
+        parameter[2] = 0x01;
+        parameter[3] = 0xF0;
+        // BFA describes the Bottom Fixed Area
+        parameter[4] = 0x00;
+        parameter[5] = 0x00;
+        lcd_write_reg(ST7789H2_VSCRDEF, parameter, 6);
+
+        // vertical scroll start address of RAM 
+        // GRAM row nbr (320) - display row nbr (240) = 80 = 0x50 
+        parameter[0] = 0x00;
+        parameter[1] = 0x50;
+        lcd_write_reg(ST7789H2_VSCSAD, parameter, 2);
+
+        parameter[0] = 0xC0;
+        break;
+    case ST7789H2_ORIENTATION_PORTRAIT:
+        parameter[0] = 0x60;
+        break;
+    }
+    lcd_write_reg(ST7789H2_NORMAL_DISPLAY, parameter, 1);
+}
+
 
 void draw_h_line (uint16_t x_pos, uint16_t y_pos, uint16_t x_size, uint16_t * data)
 {
-    ST7789H2_SetCursor(x_pos, y_pos);
+    lcd_set_cursor(x_pos, y_pos);
 
     // prepare to write to LCD RAM
-    ST7789H2_WriteReg(ST7789H2_WRITE_RAM, (uint8_t *)NULL, 0);
-
-    for (uint32_t i = 0; i < x_size; i++)
+    LCD_IO_WriteReg(ST7789H2_WRITE_RAM);
+    LCD_IO_WriteMultipleData(data, x_size);
+    /*
+    for (uint16_t i = 0; i < x_size; i++)
     {
         LCD_IO_WriteData(data[i]);
     }
+    */
 }
 
 void draw_RGB_image (uint16_t x_pos, uint16_t y_pos, uint16_t x_size, uint16_t y_size, uint16_t * data)
 {
-    for (uint32_t i = 0; i < y_size; ++i)
+    for (uint16_t i = 0; i < y_size; ++i)
     {
         // draw one line of the picture 
         draw_h_line(x_pos, y_pos + i, x_size, data + (i * x_size));
@@ -26,13 +97,12 @@ void draw_RGB_image (uint16_t x_pos, uint16_t y_pos, uint16_t x_size, uint16_t y
 
 void draw_h_line_mono (uint16_t x_pos, uint16_t y_pos, uint16_t x_size, uint16_t color)
 {
-    ST7789H2_SetCursor(x_pos, y_pos);
+    lcd_set_cursor(x_pos, y_pos);
     
     // prepare to write to LCD RAM
-    ST7789H2_WriteReg(ST7789H2_WRITE_RAM, (uint8_t *)NULL, 0);
+    LCD_IO_WriteReg(ST7789H2_WRITE_RAM);
 
-    for (uint32_t i = 0; i != x_size; ++i)
-    {
+    for (uint16_t i = 0; i != x_size; ++i)
         LCD_IO_WriteData(color);
-    }
 }
+

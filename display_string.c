@@ -1,7 +1,6 @@
 #include "display_string.h"
 #include <stdint.h>
 #include <string.h>
-#include "st7789h2/st7789h2.h"
 #include "st7789h2_driver.h"
 #include "Fonts/fonts.h"
 
@@ -10,8 +9,8 @@ void display_string (uint32_t x_pos, uint32_t y_pos, char const * str, sFONT * f
     const uint16_t f_height = font->Height;
     const uint16_t f_width  = font->Width;
     const uint16_t f_b_width = (f_width + 7) / 8;
-    const uint32_t x_lcd_size = ST7789H2_GetLcdPixelWidth();
-    const uint32_t y_lcd_size = ST7789H2_GetLcdPixelHeight();
+    const uint32_t x_lcd_size = lcd_pixel_width;
+    const uint32_t y_lcd_size = lcd_pixel_height;
     x_pos %= x_lcd_size;
     y_pos %= y_lcd_size;
     
@@ -39,8 +38,8 @@ void display_string (uint32_t x_pos, uint32_t y_pos, char const * str, sFONT * f
                 line_offset; //line
 
             
-            uint32_t f_line_v = 0;
-            for (uint32_t k = 0; k != f_b_width; ++k)
+            uint32_t f_line_v = f_line[0];
+            for (uint32_t k = 1; k != f_b_width; ++k)
             {
                 f_line_v <<= 8;
                 f_line_v |= f_line[k];
@@ -87,7 +86,7 @@ void display_string_center (int32_t x_pos, uint32_t y_pos, char const * str, sFO
 {
     uint16_t f_width  = font->Width;
     uint32_t len = strlen(str);
-    uint32_t x_lcd_size = ST7789H2_GetLcdPixelWidth();
+    uint32_t x_lcd_size = lcd_pixel_width;
     x_pos %= x_lcd_size;
     len %= x_lcd_size;
     
