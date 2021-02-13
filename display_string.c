@@ -24,7 +24,7 @@ void display_string (uint32_t x_pos, uint32_t y_pos, char const * str, sFONT con
         len = x_str_size;
     const uint32_t x_line_end = len * f_width;
  
-    lcd_set_region(x_pos, y_pos, x_line_size, f_height);
+    lcd_set_region(x_pos, y_pos, x_line_size - 1, f_height);
     lcd_io_write_reg(ST7789H2_WRITE_RAM);
     
     uint16_t colors[2] = {color->back, color->text};

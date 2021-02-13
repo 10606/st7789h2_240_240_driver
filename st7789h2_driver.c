@@ -4,8 +4,8 @@
 
 typedef struct
 {
-    uint16_t reg;
-    uint16_t ram;
+    volatile uint16_t reg;
+    volatile uint16_t ram;
 } LCD_controller_t;
 
 #define FMC_BANK1  ((LCD_controller_t *)(0x60000000 | 0x00000000))
