@@ -1,34 +1,5 @@
 #include "st7789h2_driver.h"
 
-#include "stm32f4xx.h"
-
-typedef struct
-{
-    volatile uint16_t reg;
-    volatile uint16_t ram;
-} LCD_controller_t;
-
-#define FMC_BANK1  ((LCD_controller_t *)(0x60000000 | 0x00000000))
-#define FMC_BANK3  ((LCD_controller_t *)(0x60000000 | 0x08000000))
-
-void lcd_io_write_data (uint16_t data)
-{
-    FMC_BANK1->ram = data;
-    __DSB();
-}
-
-void lcd_io_write_reg (uint8_t reg)
-{
-    FMC_BANK1->reg = reg;
-    __DSB();
-}
-
-uint16_t lcd_io_read_data ()
-{
-    return FMC_BANK1->ram;
-}
-
-
 
 void lcd_write_reg (uint8_t command, uint8_t * data, uint16_t size)
 {
