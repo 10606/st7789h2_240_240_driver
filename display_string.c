@@ -29,9 +29,8 @@ void display_string (uint32_t x_pos, uint32_t y_pos, char const * str, sFONT con
     
     uint16_t colors[2] = {color->back, color->text};
     uint8_t const * line_addr = font->table;
-    for (uint32_t i = 0; i != f_height; ++i)
+    for (uint32_t i = 0; i != f_height; ++i, line_addr += f_b_width)
     {
-        line_addr += f_b_width;
         for (uint32_t j = 0; j != len; ++j)
         {
             uint8_t const * f_line = 
