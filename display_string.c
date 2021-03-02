@@ -2,7 +2,7 @@
 #include <stdint.h>
 #include <string.h>
 #include "st7789h2_driver.h"
-#include "Fonts/fonts.h"
+#include "fonts/fonts.h"
 
 void display_string (uint32_t x_pos, uint32_t y_pos, char const * str, sFONT const * font, color_t const * color)
 {
@@ -35,7 +35,7 @@ void display_string (uint32_t x_pos, uint32_t y_pos, char const * str, sFONT con
         {
             uint8_t const * f_line = 
                 line_addr +  //table + line
-                (uint8_t)(str[j] - ' ') * symbol_multiplier; //symbol
+                (uint8_t)(str[j]) * symbol_multiplier; //symbol
 
             uint32_t f_line_v = f_line[0];
             for (uint32_t k = 1; k != f_b_width; ++k)

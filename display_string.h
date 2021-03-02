@@ -2,7 +2,7 @@
 #define DISPLAY_STRING_H
 
 #include <stdint.h>
-#include "Fonts/fonts.h"
+#include "fonts/fonts.h"
 
 typedef struct color_t
 {
