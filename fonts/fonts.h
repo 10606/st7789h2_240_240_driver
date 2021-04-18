@@ -1,6 +1,11 @@
 #ifndef FONTS_H
 #define FONTS_H
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 #include <stdint.h>
 
 typedef struct
@@ -17,6 +22,10 @@ extern sFONT font_18;
 extern sFONT font_20;
 extern sFONT font_22;
 extern sFONT font_24;
+
+#ifdef __cplusplus
+}
+#endif
 
 
 #endif

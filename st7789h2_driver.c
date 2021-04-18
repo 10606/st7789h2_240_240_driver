@@ -48,7 +48,7 @@ uint16_t lcd_read_reg (uint8_t command)
     return lcd_io_read_data();
 }
 
-void draw_h_line (uint16_t x_pos, uint16_t y_pos, uint16_t x_size, uint16_t * data)
+void draw_h_line (uint16_t x_pos, uint16_t y_pos, uint16_t x_size, uint16_t const * data)
 {
     lcd_set_cursor(x_pos, y_pos);
     // prepare to write to LCD RAM
@@ -57,7 +57,7 @@ void draw_h_line (uint16_t x_pos, uint16_t y_pos, uint16_t x_size, uint16_t * da
         lcd_io_write_data(data[i]);
 }
 
-void draw_RGB_image (uint16_t x_pos, uint16_t y_pos, uint16_t x_size, uint16_t y_size, uint16_t * data)
+void draw_RGB_image (uint16_t x_pos, uint16_t y_pos, uint16_t x_size, uint16_t y_size, uint16_t const * data)
 {
     lcd_set_region(x_pos, y_pos, x_size, y_size);
     // prepare to write to LCD RAM

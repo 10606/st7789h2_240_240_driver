@@ -9,12 +9,10 @@ void display_string (uint32_t x_pos, uint32_t y_pos, char const * str, sFONT con
     const uint32_t f_height = font->Height;
     const uint32_t f_width  = font->Width;
     const uint32_t f_b_width = (f_width + 7) / 8;
-    const uint32_t x_lcd_size = lcd_pixel_width;
-    const uint32_t y_lcd_size = lcd_pixel_height;
-    x_pos %= x_lcd_size;
-    y_pos %= y_lcd_size;
+    x_pos %= lcd_pixel_width;
+    y_pos %= lcd_pixel_height;
     
-    const uint32_t x_str_size = (x_lcd_size - x_pos) / f_width;
+    const uint32_t x_str_size = (lcd_pixel_width - x_pos) / f_width;
     const uint32_t x_line_size = x_str_size * f_width;
     
     const uint32_t offset = 8 * f_b_width - 1;
