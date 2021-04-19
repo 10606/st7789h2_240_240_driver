@@ -9,13 +9,13 @@ void display_string (uint32_t x_pos, uint32_t y_pos, char const * str, sFONT con
     const uint32_t f_height = font->Height;
     const uint32_t f_width  = font->Width;
     const uint32_t f_b_width = (f_width + 7) / 8;
+    const uint32_t f_t_width = 7 - (f_width + 7) % 8;
     x_pos %= lcd_pixel_width;
     y_pos %= lcd_pixel_height;
     
     const uint32_t x_str_size = (lcd_pixel_width - x_pos) / f_width;
     const uint32_t x_line_size = x_str_size * f_width;
     
-    const uint32_t offset = 8 * f_b_width - 1;
     const uint32_t symbol_multiplier = f_b_width * f_height;
     uint32_t len = strlen(str);
     if (len > x_str_size)
@@ -25,7 +25,6 @@ void display_string (uint32_t x_pos, uint32_t y_pos, char const * str, sFONT con
     lcd_set_region(x_pos, y_pos, x_line_size - 1, f_height);
     lcd_io_write_reg(ST7789H2_WRITE_RAM);
     
-    uint16_t colors[2] = {color->back, color->text};
     uint8_t const * line_addr = font->table;
     for (uint32_t i = 0; i != f_height; ++i, line_addr += f_b_width)
     {
@@ -35,18 +34,17 @@ void display_string (uint32_t x_pos, uint32_t y_pos, char const * str, sFONT con
                 line_addr +  //table + line
                 (uint8_t)(str[j]) * symbol_multiplier; //symbol
 
-            uint32_t f_line_v = f_line[0];
-            for (uint32_t k = 1; k != f_b_width; ++k)
-            {
-                f_line_v <<= 8;
-                f_line_v += f_line[k];
-            }
-            
-            for (uint32_t k = 0, b_pos = offset; k < f_width; k++, b_pos--)
-                lcd_io_write_data(colors[1 & (f_line_v >> b_pos)]);
+            uint32_t k;
+            for (k = 0; k != f_b_width - 1; ++k)
+                for (uint32_t c = 8; c-- != 0;)     
+                    lcd_io_write_data(((f_line[k] >> c) & 1)? color->text : color->back);
+
+            // last can be not full
+            for (uint32_t c = 8; c-- != f_t_width;)
+                lcd_io_write_data(((f_line[k] >> c) & 1)? color->text : color->back);
         }
         for (uint32_t j = x_line_end; j < x_line_size; ++j)
-            lcd_io_write_data(colors[0]);
+            lcd_io_write_data(color->back);
     }
 }
 
