@@ -149,8 +149,13 @@ void lcd_init_st7789h2 (void)
     lcd_display_on();
 
     // tearing effect line on: option (00h:VSYNC interface OFF, 01h:VSYNC interface ON)
-    parameter[0] = 0x00;
-    lcd_write_reg(ST7789H2_TEARING_EFFECT, parameter, 1);
+    parameter[0] = 0x01;
+    lcd_write_reg(ST7789H2_TEARING_EFFECT, parameter, 0);
+	
+	// tearing modes
+	parameter[0] = 0;
+	parameter[1] = 0b11000000;
+    lcd_write_reg(ST7789H2_RDDSM, parameter, 2);
 }
 
 

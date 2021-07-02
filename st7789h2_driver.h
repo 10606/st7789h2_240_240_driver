@@ -32,7 +32,7 @@ static inline uint16_t lcd_io_read_data ()
 }
 
 
-extern void     LCD_IO_Init (void);
+extern void LCD_IO_Init (void);
 void lcd_io_write_reg (uint8_t reg);
 void lcd_io_write_data (uint16_t data);
 uint16_t lcd_io_read_data ();
@@ -46,6 +46,10 @@ uint16_t lcd_read_reg (uint8_t command);
 void lcd_set_orientation (uint8_t orientation);
 void lcd_set_cursor (uint16_t x_pos, uint16_t y_pos);
 void lcd_set_region (uint16_t x_pos, uint16_t y_pos, uint16_t x_size, uint16_t y_size);
+
+void lcd_set_scroll_region (uint16_t top, uint16_t bottom);
+void lcd_scroll (uint16_t vsp);
+
 
 
 #define lcd_pixel_width 240
@@ -88,6 +92,7 @@ void lcd_set_region (uint16_t x_pos, uint16_t y_pos, uint16_t x_size, uint16_t y
 #define ST7789H2_TEARING_EFFECT     0x35
 #define ST7789H2_DISPLAY_INVERSION  0x21
 
+#define ST7789H2_RDDSM 0x0E
 
 
 

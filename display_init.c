@@ -44,13 +44,6 @@
 
 #include "st7789h2_driver.h"
 
-#define LCD_RESET_PIN                    GPIO_PIN_11
-#define LCD_RESET_GPIO_PORT              GPIOD
-#define LCD_TE_PIN                       GPIO_PIN_3
-#define LCD_TE_GPIO_PORT                 GPIOG
-#define LCD_BL_CTRL_PIN                  GPIO_PIN_5
-#define LCD_BL_CTRL_GPIO_PORT            GPIOF
-
 #define LCD_RESET_GPIO_CLK_ENABLE()      __HAL_RCC_GPIOD_CLK_ENABLE()
 #define LCD_TE_GPIO_CLK_ENABLE()         __HAL_RCC_GPIOG_CLK_ENABLE()
 #define LCD_BL_CTRL_GPIO_CLK_ENABLE()    __HAL_RCC_GPIOF_CLK_ENABLE()

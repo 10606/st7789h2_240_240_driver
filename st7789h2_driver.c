@@ -77,3 +77,32 @@ void draw_h_line_mono (uint16_t x_pos, uint16_t y_pos, uint16_t x_size, uint16_t
         lcd_io_write_data(color);
 }
 
+void lcd_set_scroll_region (uint16_t top, uint16_t bottom)
+{
+    //static uint16_t scrolled = 0;
+
+    uint16_t tfa = top;
+    uint16_t vsa = bottom - top;
+    uint16_t bfa = 80 + lcd_pixel_height - top - bottom;
+
+    lcd_io_write_reg(ST7789H2_VSCRDEF);
+    lcd_io_write_data(tfa >> 8);
+    lcd_io_write_data(tfa & 0xff);
+    lcd_io_write_data(vsa >> 8);
+    lcd_io_write_data(vsa & 0xff);
+    lcd_io_write_data(bfa >> 8);
+    lcd_io_write_data(bfa & 0xff);
+    
+    //uint16_t vsp = tfa + (value + scrolled) % bottom;
+    
+    
+    //scrolled = (scrolled + value) % bottom; 
+}
+
+void lcd_scroll (uint16_t vsp)
+{
+    lcd_io_write_reg(ST7789H2_VSCSAD);
+    lcd_io_write_data(vsp >> 8);
+    lcd_io_write_data(vsp & 0xff);
+}
+
