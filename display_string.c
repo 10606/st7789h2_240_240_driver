@@ -4,7 +4,7 @@
 #include "st7789h2_driver.h"
 #include "fonts/fonts.h"
 
-void display_string (uint32_t x_pos, uint32_t y_pos, char const * str, sFONT const * font, color_t const * color)
+void display_string_e (uint32_t x_pos, uint32_t y_pos, char const * str, sFONT const * font, color_t const color, char end)
 {
     const uint32_t f_height = font->Height;
     const uint32_t f_width  = font->Width;
@@ -22,7 +22,10 @@ void display_string (uint32_t x_pos, uint32_t y_pos, char const * str, sFONT con
         len = x_str_size;
     const uint32_t x_line_end = len * f_width;
  
-    lcd_set_region(x_pos, y_pos, x_line_size - 1, f_height);
+    if (end)
+        lcd_set_region(x_pos, y_pos, x_line_size - 1, f_height);
+    else
+        lcd_set_region(x_pos, y_pos, x_line_end - 1, f_height);
     lcd_io_write_reg(ST7789H2_WRITE_RAM);
     
     uint8_t const * line_addr = font->table;
@@ -37,21 +40,23 @@ void display_string (uint32_t x_pos, uint32_t y_pos, char const * str, sFONT con
             uint32_t k;
             for (k = 0; k != f_b_width - 1; ++k)
                 for (uint32_t c = 8; c-- != 0;)     
-                    lcd_io_write_data(((f_line[k] >> c) & 1)? color->text : color->back);
+                    lcd_io_write_data(((f_line[k] >> c) & 1)? color.text : color.back);
 
             // last can be not full
             for (uint32_t c = 8; c-- != f_t_width;)
-                lcd_io_write_data(((f_line[k] >> c) & 1)? color->text : color->back);
+                lcd_io_write_data(((f_line[k] >> c) & 1)? color.text : color.back);
         }
-        for (uint32_t j = x_line_end; j < x_line_size; ++j)
-            lcd_io_write_data(color->back);
+        if (end)
+        {
+            for (uint32_t j = x_line_end; j < x_line_size; ++j)
+                lcd_io_write_data(color.back);
+        }
     }
 }
 
-void display_string_c (uint32_t x_pos, uint32_t y_pos, char const * str, sFONT const * font, uint16_t color_back, uint16_t color_text)
+void display_string (uint32_t x_pos, uint32_t y_pos, char const * str, sFONT const * font, color_t const color)
 {
-    color_t color = {color_text, color_back};
-    display_string(x_pos, y_pos, str, font, &color);
+    display_string_e(x_pos, y_pos, str, font, color, 1);
 }
 
 void fill_rect (uint32_t x_pos, uint32_t y_pos, uint32_t width, uint32_t height, uint16_t color)
@@ -60,7 +65,7 @@ void fill_rect (uint32_t x_pos, uint32_t y_pos, uint32_t width, uint32_t height,
         draw_h_line_mono(x_pos, y_pos + i, width, color);
 }
 
-void display_string_center (int32_t x_pos, uint32_t y_pos, char const * str, sFONT const * font, color_t const * color)
+void display_string_center_e (int32_t x_pos, uint32_t y_pos, char const * str, sFONT const * font, color_t const color, char end)
 {
     uint32_t f_width  = font->Width;
     uint32_t len = strlen(str);
@@ -71,7 +76,7 @@ void display_string_center (int32_t x_pos, uint32_t y_pos, char const * str, sFO
     uint32_t start_x_pos = (x_lcd_size / 2) - (len * f_width / 2) + x_pos;
     if (start_x_pos < x_lcd_size) //start on screen
     {
-        display_string(start_x_pos, y_pos, str, font, color);
+        display_string_e(start_x_pos, y_pos, str, font, color, end);
         return;
     }
     uint32_t end_x_pos = start_x_pos + len * f_width;
@@ -79,13 +84,12 @@ void display_string_center (int32_t x_pos, uint32_t y_pos, char const * str, sFO
         (end_x_pos < start_x_pos)) //start on left
     {
         uint32_t start_index = (-start_x_pos + f_width - 1) / f_width;
-        display_string(start_x_pos + start_index * f_width, y_pos, str + start_index, font, color);
+        display_string_e(start_x_pos + start_index * f_width, y_pos, str + start_index, font, color, end);
     }
 }
 
-void display_string_center_c (int32_t x_pos, uint32_t y_pos, char const * str, sFONT const * font, uint16_t color_back, uint16_t color_text)
+void display_string_center (int32_t x_pos, uint32_t y_pos, char const * str, sFONT const * font, color_t const color)
 {
-    color_t color = {color_text, color_back};
-    display_string_center(x_pos, y_pos, str, font, &color);
+    display_string_center_e(x_pos, y_pos, str, font, color, 1);
 }
 

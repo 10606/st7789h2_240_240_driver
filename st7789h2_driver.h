@@ -33,9 +33,6 @@ static inline uint16_t lcd_io_read_data ()
 
 
 extern void LCD_IO_Init (void);
-void lcd_io_write_reg (uint8_t reg);
-void lcd_io_write_data (uint16_t data);
-uint16_t lcd_io_read_data ();
 
 void draw_h_line (uint16_t x_pos, uint16_t y_pos, uint16_t x_size, uint16_t const * data);
 void draw_h_line_mono (uint16_t x_pos, uint16_t y_pos, uint16_t x_size, uint16_t color);

@@ -113,7 +113,7 @@ void lcd_init_st7789h2 (void)
     // power control
     parameter[0] = 0xA4;
     parameter[1] = 0xA1;
-    lcd_write_reg(ST7789H2_POWER_CTRL, parameter, 1);
+    lcd_write_reg(ST7789H2_POWER_CTRL, parameter, 2);
 
     // ST7789H2 gamma setting
     parameter[0] = 0xD0;
@@ -150,7 +150,7 @@ void lcd_init_st7789h2 (void)
 
     // tearing effect line on: option (00h:VSYNC interface OFF, 01h:VSYNC interface ON)
     parameter[0] = 0x01;
-    lcd_write_reg(ST7789H2_TEARING_EFFECT, parameter, 0);
+    lcd_write_reg(ST7789H2_TEARING_EFFECT, parameter, 1);
 	
 	// tearing modes
 	parameter[0] = 0;
