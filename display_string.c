@@ -4,16 +4,16 @@
 #include "st7789h2_driver.h"
 #include "fonts/fonts.h"
 
-void display_string_e (uint32_t x_pos, uint32_t y_pos, char const * str, sFONT const * font, color_t const color, char end)
+void display_string_e (point_t pos, char const * str, sFONT const * font, color_t const color, char end)
 {
     const uint32_t f_height = font->Height;
     const uint32_t f_width  = font->Width;
     const uint32_t f_b_width = (f_width + 7) / 8;
     const uint32_t f_t_width = 7 - (f_width + 7) % 8;
-    x_pos %= lcd_pixel_width;
-    y_pos %= lcd_pixel_height;
+    pos.x %= lcd_pixel_width;
+    pos.y %= lcd_pixel_height;
     
-    const uint32_t x_str_size = (lcd_pixel_width - x_pos) / f_width;
+    const uint32_t x_str_size = (lcd_pixel_width - pos.x) / f_width;
     const uint32_t x_line_size = x_str_size * f_width;
     
     const uint32_t symbol_multiplier = f_b_width * f_height;
@@ -23,9 +23,9 @@ void display_string_e (uint32_t x_pos, uint32_t y_pos, char const * str, sFONT c
     const uint32_t x_line_end = len * f_width;
  
     if (end)
-        lcd_set_region(x_pos, y_pos, x_line_size - 1, f_height);
+        lcd_set_region(pos.x, pos.y, x_line_size - 1, f_height);
     else
-        lcd_set_region(x_pos, y_pos, x_line_end - 1, f_height);
+        lcd_set_region(pos.x, pos.y, x_line_end - 1, f_height);
     lcd_io_write_reg(ST7789H2_WRITE_RAM);
     
     uint8_t const * line_addr = font->table;
@@ -54,29 +54,30 @@ void display_string_e (uint32_t x_pos, uint32_t y_pos, char const * str, sFONT c
     }
 }
 
-void display_string (uint32_t x_pos, uint32_t y_pos, char const * str, sFONT const * font, color_t const color)
+void display_string (point_t pos, char const * str, sFONT const * font, color_t const color)
 {
-    display_string_e(x_pos, y_pos, str, font, color, 1);
+    display_string_e(pos, str, font, color, 1);
 }
 
-void fill_rect (uint32_t x_pos, uint32_t y_pos, uint32_t width, uint32_t height, uint16_t color)
+void fill_rect (point_t pos, point_t size, uint16_t color)
 {
-    for (uint32_t i = 0; i != height; ++i)
-        draw_h_line_mono(x_pos, y_pos + i, width, color);
+    for (uint32_t i = 0; i != size.y; ++i)
+        draw_h_line_mono(pos.x, pos.y + i, size.x, color);
 }
 
-void display_string_center_e (int32_t x_pos, uint32_t y_pos, char const * str, sFONT const * font, color_t const color, char end)
+void display_string_center_e (point_t pos, char const * str, sFONT const * font, color_t const color, char end)
 {
     uint32_t f_width  = font->Width;
     uint32_t len = strlen(str);
     uint32_t x_lcd_size = lcd_pixel_width;
-    x_pos %= x_lcd_size;
+    pos.x %= x_lcd_size;
     len %= x_lcd_size;
     
-    uint32_t start_x_pos = (x_lcd_size / 2) - (len * f_width / 2) + x_pos;
+    uint32_t start_x_pos = (x_lcd_size / 2) - (len * f_width / 2) + pos.x;
     if (start_x_pos < x_lcd_size) //start on screen
     {
-        display_string_e(start_x_pos, y_pos, str, font, color, end);
+        pos.x = start_x_pos;
+        display_string_e(pos, str, font, color, end);
         return;
     }
     uint32_t end_x_pos = start_x_pos + len * f_width;
@@ -84,12 +85,14 @@ void display_string_center_e (int32_t x_pos, uint32_t y_pos, char const * str, s
         (end_x_pos < start_x_pos)) //start on left
     {
         uint32_t start_index = (-start_x_pos + f_width - 1) / f_width;
-        display_string_e(start_x_pos + start_index * f_width, y_pos, str + start_index, font, color, end);
+        pos.x = start_x_pos + start_index * f_width;
+        str += start_index;
+        display_string_e(pos, str, font, color, end);
     }
 }
 
-void display_string_center (int32_t x_pos, uint32_t y_pos, char const * str, sFONT const * font, color_t const color)
+void display_string_center (point_t pos, char const * str, sFONT const * font, color_t const color)
 {
-    display_string_center_e(x_pos, y_pos, str, font, color, 1);
+    display_string_center_e(pos, str, font, color, 1);
 }
 
